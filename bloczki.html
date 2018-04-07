@@ -1,0 +1,106 @@
+﻿<html>
+	<body>
+		<form>
+			Pozycja X: <input type="number" name="posX" placeholder="1-900"/>
+			Pozycja Y:<input type="number" name="posY" placeholder="1-400"/>
+			Predkosc: <input type="number" name="speed" placeholder="1-5"/>
+		</form>
+		<button id="dodaj_bloczek">Dodaj bloczek</button><br/><br/>
+		<canvas id="canvas">
+			Brak obslugi elementu canvas
+		</canvas>
+	</body>
+	<script type="text/javascript">
+		var dodaj = document.getElementById('dodaj_bloczek');
+		var canvas = document.getElementById('canvas');
+		var c = canvas.getContext('2d');
+		
+		// parametry kanwy
+		canvas.width = 1000;
+		canvas.height = 500;
+		canvas.style.border = 'solid';
+		
+		// konstruktor bloczka
+		function _bloczek(_posX , _posY , _speedX , _speedY)
+		{
+			this.posX = _posX;
+			this.posY = _posY;
+			this.speedX = _speedX;
+			this.speedY = _speedY;
+			this.obr = new Image();
+			this.obr.src = 'bloczek.jpg';
+			
+			this.przesun = function()
+			{
+				if(this.posX > 1000 - 24 || this.posX < 0 )
+				{
+					this.speedX = -this.speedX;
+				}
+				
+				if(this.posY > 500 -24 || this.posY < 0)
+				{
+					this.speedY = -this.speedY;
+				}
+				this.posX += this.speedX;
+				this.posY += this.speedY;
+			}
+			this.rysuj = function()
+			{
+				c.drawImage(this.obr , this.posX , this.posY , 24 , 24);
+			}
+		
+		}
+		
+		// funkcja animujaca
+		function animacja()
+		{
+			c.clearRect(0,0,1000,500);
+			
+			for(x = 0; x < bloki.length ; x++)
+			{
+				bloki[x].przesun();
+				bloki[x].rysuj();
+			}
+			
+		}
+		
+		// tablica z bloczkami
+		var bloki = [];
+		bloki.push(new _bloczek(0,0,2,2));
+		
+		// przypiecie obslugi zdarzenia do przycisku
+		dodaj.onclick = function()
+		{
+			var positionX = document.getElementsByTagName('form')[0].posX.value;
+			var positionY = document.getElementsByTagName('form')[0].posY.value;
+			var speed = document.getElementsByTagName('form')[0].speed.value;
+			
+			positionX = parseInt(positionX);
+			positionY = parseInt(positionY);
+			speed = parseInt(speed);
+			
+			if(positionX > 900 || positionX < 1 || positionY > 400 || positionY < 1 || speed > 5 || speed < 1)
+			{
+				alert("Niepoprawne dane wejsciowe");
+
+				for(y = 0 ;y < 3; y++)
+				{
+					document.getElementsByTagName('form')[0].getElementsByTagName('input')[y].value = "";
+				}
+
+				return;
+			}
+				
+			
+			bloki.push(new _bloczek(positionX,positionY,speed,speed));
+		
+			for(y = 0 ;y < 3; y++)
+			{
+				document.getElementsByTagName('form')[0].getElementsByTagName('input')[y].value = "";
+			}
+		}
+		
+		window.onload = function(){setInterval('requestAnimationFrame(animacja)' , 1000/60)};
+	
+	</script>
+</html>
